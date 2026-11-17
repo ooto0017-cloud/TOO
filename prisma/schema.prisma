@@ -185,6 +185,8 @@ model ReadingProgress {
   userId    String
   bookId    String
   page      Int      @default(1)
+  totalPages Int?
+  completedAt DateTime?
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)

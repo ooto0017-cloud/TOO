@@ -15,6 +15,9 @@ Multilingual university library built with Next.js 15, React 19, TypeScript, Pri
 - Search, status filters and pagination; validated forms, duplicate warnings, unsaved-change protection and keyboard-accessible dialogs.
 - Administrators can view recent users and audit events. Librarians can view active/overdue loans. These are read-only lists, limited to the latest 50 records (loans by due date).
 - Book changes and their audit records are committed in a single transaction.
+- Student library dashboard with currently reading, saved and completed shelves, personal counts, recent reading and newly added PDF books.
+- In-app PDF reader with page navigation, zoom, keyboard shortcuts, explicit completion and automatic private progress saving. Reopening a book resumes the last page; rereading resets completion.
+- Bookmark books on their detail pages or in the reader. Student identity comes from the session, and each student sees only their own reading data.
 - Same-origin checks on authentication and book mutations.
 
 ## Local setup
@@ -67,12 +70,16 @@ Keep preview and production databases separate. Before the first release, apply 
 
 ## Remaining scope
 
-An annotated PDF reader with saved reading progress, loan issuing/return operations, user role/status editing, notifications, exports and content publishing are not implemented. PDFs open in the browser viewer; the download policy controls the application download endpoint and is not DRM. Add distributed authentication rate limiting and operational monitoring before a broad public launch. Use managed database backups and private Blob storage for library PDFs. Newly uploaded replacements supersede the old file after verification; old stored copies are cleaned up after the database transaction.
+PDF annotations/highlights, loan issuing/return operations, user role/status editing, notifications, exports and content publishing are not implemented. PDFs open in the in-app PDF.js reader; the download policy controls the application download endpoint and is not DRM. Add distributed authentication rate limiting and operational monitoring before a broad public launch. Use managed database backups and private Blob storage for library PDFs. Newly uploaded replacements supersede the old file after verification; old stored copies are cleaned up after the database transaction.
 
 ## Verification — 17 November 2026
 
-TypeScript validation, 36 unit tests and the production build passed. An isolated PostgreSQL database accepted the initial migration. Chromium checks covered registration, staff sign-in, draft/create/edit/publish/archive, catalog and details, audit events, all three languages, mobile layouts, sign-out, duplicate/invalid input and student/librarian access restrictions. No browser runtime errors were observed in those flows. The production server also passed sign-in, dashboard rendering, draft creation and table refresh checks. The Vercel production site is available at https://bu-library.vercel.app/uz. PostgreSQL migrations and owner administrator setup have completed. Hosted health and catalog endpoints returned HTTP 200; anonymous management API access returned HTTP 403.
+TypeScript validation, 44 unit tests and the production build passed. An isolated PostgreSQL database accepted the initial migration. Chromium checks covered registration, staff sign-in, draft/create/edit/publish/archive, catalog and details, audit events, all three languages, mobile layouts, sign-out, duplicate/invalid input and student/librarian access restrictions. No browser runtime errors were observed in those flows. The production server also passed sign-in, dashboard rendering, draft creation and table refresh checks. The Vercel production site is available at https://bu-library.vercel.app/uz. PostgreSQL migrations and owner administrator setup have completed. Hosted health and catalog endpoints returned HTTP 200; anonymous management API access returned HTTP 403.
 
 ## Media storage setup
 
 Connect a **private** Vercel Blob store to the project. The SDK reads `BLOB_READ_WRITE_TOKEN` (or supported OIDC configuration) server-side; never expose this value in client variables. `npx tsx scripts/check-media-storage.ts` verifies the real store using temporary files and removes those files afterward. For a local diagnostic, configure a development storage credential in an ignored environment file. Upload attempts that fail keep the saved book and let staff retry without creating duplicate records.
+
+## Reading dashboard migration
+
+Apply committed migrations before releasing the reader update (`npm run db:deploy`). The additive migration stores actual PDF page count and optional completion time in `ReadingProgress`. `npm run build` and `npm run dev` copy the matching PDF.js worker from the installed package into `public`; do not commit the generated worker. Reader progress is saved on page navigation, with visible save/error status and a retry action.
