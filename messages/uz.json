@@ -133,7 +133,11 @@
     "year": "Nashr yili",
     "language": "Til",
     "pages": "Sahifalar",
-    "readerNotice": "Onlayn o‘qish va yuklab olish himoyalangan hujjatlarni yetkazib berish moduli sozlangandan keyin yoqiladi."
+    "readerNotice": "Onlayn o‘qish va yuklab olish himoyalangan hujjatlarni yetkazib berish moduli sozlangandan keyin yoqiladi.",
+    "openPdf": "PDFni o‘qish",
+    "downloadPdf": "PDFni yuklab olish",
+    "signInToRead": "PDFni o‘qish uchun kiring",
+    "noPdf": "Bu kitobga PDF fayl hali biriktirilmagan."
   },
   "admin": {
     "title": "Boshqaruv paneli",
@@ -161,7 +165,7 @@
     "authors": "Mualliflar",
     "authorHint": "Bir nechta muallifni vergul bilan ajrating.",
     "slug": "Havola nomi (slug)",
-    "slugHint": "Lotin harflari, raqamlar va tire.",
+    "slugHint": "Nomdan avtomatik yaratiladi. Bo‘sh qoldirish ham mumkin.",
     "description": "Tavsif",
     "language": "Til",
     "year": "Nashr yili",
@@ -226,6 +230,19 @@
     "noAuthor": "Muallif kiritilmagan",
     "skip": "Asosiy tarkibga o‘tish",
     "manage": "Boshqaruv",
-    "confirmDiscard": "Saqlanmagan o‘zgarishlar bor. Yopilsinmi?"
+    "confirmDiscard": "Saqlanmagan o‘zgarishlar bor. Yopilsinmi?",
+    "pdfFile": "PDF fayl",
+    "coverFile": "Muqova rasmi",
+    "pdfHint": "PDF, 50 MB gacha. Fayl Saqlash tugmasi bosilganda yuklanadi.",
+    "coverHint": "JPG, PNG yoki WebP, 10 MB gacha. Rasm bosh sahifa va katalogda ko‘rinadi.",
+    "invalidPdf": "Haqiqiy PDF fayl tanlang (50 MB gacha).",
+    "invalidCover": "JPG, PNG yoki WebP rasm tanlang (10 MB gacha).",
+    "uploadingPdf": "PDF yuklanmoqda…",
+    "uploadingCover": "Muqova yuklanmoqda…",
+    "checkingFile": "Fayl tekshirilmoqda va kitobga biriktirilmoqda…",
+    "uploadFailed": "Kitob ma’lumotlari saqlandi, lekin fayl yuklash yoki nashr qilish tugamadi. Ma’lumotlarni yo‘qotmasdan Saqlash tugmasini qayta bosing.",
+    "currentPdf": "Biriktirilgan PDFni ochish",
+    "coverPreview": "Muqova ko‘rinishi",
+    "BOOK_FILE_UPLOAD": "Kitob fayli yuklandi"
   }
 }

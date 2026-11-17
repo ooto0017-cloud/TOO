@@ -9,6 +9,9 @@ Multilingual university library built with Next.js 15, React 19, TypeScript, Pri
 - Staff sign-in redirects to `/uz/admin` (also `/ru/admin` and `/en/admin`). Student accounts cannot access management routes.
 - Responsive administration dashboard with live statistics.
 - Add and edit books: title, authors, slug, ISBN, description, language, publication year, pages, featured/download flags and publication status. Drafts and archived books stay out of the public catalog.
+- Upload a PDF (up to 50 MB) and a JPG/PNG/WebP cover (up to 10 MB) while saving a new or existing book. Uploads go directly to private Vercel Blob storage, with staff-only scoped tokens and server-side file signature, size and SHA256 checks.
+- Covers appear on the home page, catalog and detail pages. Signed-in readers can open published PDFs; the download button follows the book policy. Draft media requires staff access.
+- Automatic slugs support Russian and Uzbek Cyrillic, and blank slugs are generated when saving.
 - Search, status filters and pagination; validated forms, duplicate warnings, unsaved-change protection and keyboard-accessible dialogs.
 - Administrators can view recent users and audit events. Librarians can view active/overdue loans. These are read-only lists, limited to the latest 50 records (loans by due date).
 - Book changes and their audit records are committed in a single transaction.
@@ -64,8 +67,12 @@ Keep preview and production databases separate. Before the first release, apply 
 
 ## Remaining scope
 
-PDF upload/storage/streaming, an online PDF reader, loan issuing/return operations, user role/status editing, notifications, exports and content publishing are not implemented. The download flag stores policy metadata; it does not provide a file download. Add distributed authentication rate limiting and operational monitoring before a broad public launch. Use managed database backups and private object storage for future PDFs.
+An annotated PDF reader with saved reading progress, loan issuing/return operations, user role/status editing, notifications, exports and content publishing are not implemented. PDFs open in the browser viewer; the download policy controls the application download endpoint and is not DRM. Add distributed authentication rate limiting and operational monitoring before a broad public launch. Use managed database backups and private Blob storage for library PDFs. Newly uploaded replacements supersede the old file after verification; old stored copies are cleaned up after the database transaction.
 
 ## Verification — 17 November 2026
 
-TypeScript validation, 20 unit tests and the production build passed. An isolated PostgreSQL database accepted the initial migration. Chromium checks covered registration, staff sign-in, draft/create/edit/publish/archive, catalog and details, audit events, all three languages, mobile layouts, sign-out, duplicate/invalid input and student/librarian access restrictions. No browser runtime errors were observed in those flows. The production server also passed sign-in, dashboard rendering, draft creation and table refresh checks. The Vercel production site is available at https://bu-library.vercel.app/uz. PostgreSQL migrations and owner administrator setup have completed. Hosted health and catalog endpoints returned HTTP 200; anonymous management API access returned HTTP 403.
+TypeScript validation, 36 unit tests and the production build passed. An isolated PostgreSQL database accepted the initial migration. Chromium checks covered registration, staff sign-in, draft/create/edit/publish/archive, catalog and details, audit events, all three languages, mobile layouts, sign-out, duplicate/invalid input and student/librarian access restrictions. No browser runtime errors were observed in those flows. The production server also passed sign-in, dashboard rendering, draft creation and table refresh checks. The Vercel production site is available at https://bu-library.vercel.app/uz. PostgreSQL migrations and owner administrator setup have completed. Hosted health and catalog endpoints returned HTTP 200; anonymous management API access returned HTTP 403.
+
+## Media storage setup
+
+Connect a **private** Vercel Blob store to the project. The SDK reads `BLOB_READ_WRITE_TOKEN` (or supported OIDC configuration) server-side; never expose this value in client variables. `npx tsx scripts/check-media-storage.ts` verifies the real store using temporary files and removes those files afterward. For a local diagnostic, configure a development storage credential in an ignored environment file. Upload attempts that fail keep the saved book and let staff retry without creating duplicate records.

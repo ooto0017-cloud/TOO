@@ -133,7 +133,11 @@
     "year": "Publication year",
     "language": "Language",
     "pages": "Pages",
-    "readerNotice": "Online reading and downloads will be available after the protected document delivery module is configured."
+    "readerNotice": "Online reading and downloads will be available after the protected document delivery module is configured.",
+    "openPdf": "Read PDF",
+    "downloadPdf": "Download PDF",
+    "signInToRead": "Sign in to read PDF",
+    "noPdf": "A PDF has not been attached to this book yet."
   },
   "admin": {
     "title": "Administration",
@@ -161,7 +165,7 @@
     "authors": "Authors",
     "authorHint": "Separate multiple authors with commas.",
     "slug": "URL slug",
-    "slugHint": "Lowercase Latin letters, numbers and hyphens.",
+    "slugHint": "Generated automatically from the title. You can leave it blank.",
     "description": "Description",
     "language": "Language",
     "year": "Publication year",
@@ -226,6 +230,19 @@
     "noAuthor": "No author added",
     "skip": "Skip to content",
     "manage": "Manage",
-    "confirmDiscard": "You have unsaved changes. Close the editor?"
+    "confirmDiscard": "You have unsaved changes. Close the editor?",
+    "pdfFile": "PDF file",
+    "coverFile": "Cover image",
+    "pdfHint": "PDF, up to 50 MB. Uploaded when you save the book.",
+    "coverHint": "JPG, PNG or WebP, up to 10 MB. Shown on the home page and in the catalog.",
+    "invalidPdf": "Choose a valid PDF file up to 50 MB.",
+    "invalidCover": "Choose a JPG, PNG or WebP image up to 10 MB.",
+    "uploadingPdf": "Uploading PDF…",
+    "uploadingCover": "Uploading cover…",
+    "checkingFile": "Verifying and attaching the file…",
+    "uploadFailed": "Book details were saved, but uploading or publishing did not finish. Click Save again to retry without creating a duplicate book.",
+    "currentPdf": "Open attached PDF",
+    "coverPreview": "Cover preview",
+    "BOOK_FILE_UPLOAD": "Book file uploaded"
   }
 }
