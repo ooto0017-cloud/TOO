@@ -29,7 +29,7 @@ npm run admin:create
 npm run dev
 ```
 
-Visit `http://localhost:3000/uz`. Run the admin creation script only in a trusted terminal; it creates or promotes a SUPER_ADMIN using the details you enter. Never commit credentials.
+Visit `http://localhost:3000/uz`. Run the admin creation script only in a trusted terminal; it creates or promotes a SUPER_ADMIN using the details you enter. Never commit credentials. To grant an existing active account administrator access without changing its password, run `npx tsx scripts/promote-admin.ts EMAIL` from a trusted terminal with the intended database configured.
 
 ## Checks
 
