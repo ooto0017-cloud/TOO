@@ -1,0 +1,262 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  LIBRARIAN
+  STUDENT
+  TEACHER
+  STAFF
+}
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  PENDING
+}
+enum BookStatus {
+  ACTIVE
+  DRAFT
+  ARCHIVED
+}
+enum LoanStatus {
+  ACTIVE
+  RETURNED
+  OVERDUE
+  LOST
+}
+enum FileKind {
+  PDF
+  COVER
+}
+
+model User {
+  id             String       @id @default(cuid())
+  email          String       @unique
+  passwordHash   String
+  firstName      String
+  lastName       String
+  studentNumber  String?      @unique
+  department     String?
+  role           UserRole     @default(STUDENT)
+  status         UserStatus   @default(ACTIVE)
+  locale         String       @default("uz")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  sessions       Session[]
+  favorites      Favorite[]
+  progress       ReadingProgress[]
+  views          BookView[]
+  loans          Loan[]       @relation("Borrower")
+  issuedLoans    Loan[]       @relation("Issuer")
+  notifications  Notification[]
+  auditLogs      AuditLog[]
+  @@index([role, status])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, expiresAt])
+}
+
+model Permission {
+  id          String @id @default(cuid())
+  key         String @unique
+  description String
+  rolePermissions RolePermission[]
+}
+
+model RolePermission {
+  id           String     @id @default(cuid())
+  role         UserRole
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  @@unique([role, permissionId])
+}
+
+model Book {
+  id               String         @id @default(cuid())
+  slug             String         @unique
+  title            String
+  subtitle         String?
+  description      String         @db.Text
+  isbn             String?        @unique
+  language         String         @default("uz")
+  publicationYear  Int?
+  pages            Int?
+  status           BookStatus     @default(DRAFT)
+  featured         Boolean        @default(false)
+  downloadsAllowed Boolean        @default(false)
+  viewsCount       Int            @default(0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  publisherId      String?
+  publisher        Publisher?     @relation(fields: [publisherId], references: [id], onDelete: SetNull)
+  authors          BookAuthor[]
+  categories       BookCategory[]
+  files            BookFile[]
+  favorites        Favorite[]
+  progress         ReadingProgress[]
+  views            BookView[]
+  loans            Loan[]
+  @@index([title])
+  @@index([status, createdAt])
+  @@index([language, publicationYear])
+}
+
+model Author {
+  id        String       @id @default(cuid())
+  fullName  String
+  biography String?      @db.Text
+  books     BookAuthor[]
+  @@index([fullName])
+}
+
+model BookAuthor {
+  id       String @id @default(cuid())
+  bookId   String
+  authorId String
+  book     Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  author   Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  @@unique([bookId, authorId])
+}
+
+model Category {
+  id      String         @id @default(cuid())
+  nameUz  String
+  nameRu  String
+  nameEn  String
+  slug    String         @unique
+  books   BookCategory[]
+}
+
+model BookCategory {
+  id         String   @id @default(cuid())
+  bookId     String
+  categoryId String
+  book       Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  @@unique([bookId, categoryId])
+}
+
+model Publisher {
+  id      String @id @default(cuid())
+  name    String @unique
+  website String?
+  books   Book[]
+}
+
+model BookFile {
+  id         String   @id @default(cuid())
+  bookId     String
+  kind       FileKind
+  storageKey String   @unique
+  mimeType   String
+  sizeBytes  Int
+  checksum   String
+  createdAt  DateTime @default(now())
+  book       Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  @@index([bookId, kind])
+}
+
+model BookView {
+  id       String   @id @default(cuid())
+  bookId   String
+  userId   String?
+  viewedAt DateTime @default(now())
+  book     Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user     User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  @@index([bookId, viewedAt])
+}
+
+model ReadingProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  bookId    String
+  page      Int      @default(1)
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  @@unique([userId, bookId])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  bookId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  @@unique([userId, bookId])
+}
+
+model Loan {
+  id         String     @id @default(cuid())
+  userId     String
+  bookId     String
+  issuedById String
+  issuedAt   DateTime   @default(now())
+  dueAt      DateTime
+  returnedAt DateTime?
+  status     LoanStatus @default(ACTIVE)
+  notes      String?
+  borrower   User       @relation("Borrower", fields: [userId], references: [id])
+  book       Book       @relation(fields: [bookId], references: [id])
+  issuer     User       @relation("Issuer", fields: [issuedById], references: [id])
+  @@index([status, dueAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  body      String   @db.Text
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, readAt])
+}
+
+model News {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  titleUz     String
+  titleRu     String
+  titleEn     String
+  bodyUz      String   @db.Text
+  bodyRu      String   @db.Text
+  bodyEn      String   @db.Text
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+  actor     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  @@index([createdAt, action])
+}

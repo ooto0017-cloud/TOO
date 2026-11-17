@@ -1,0 +1,4 @@
+import {PrismaClient} from '@prisma/client';
+const prisma=new PrismaClient();
+async function main(){const categories=[{slug:'engineering',nameUz:'Muhandislik',nameRu:'Инженерия',nameEn:'Engineering'},{slug:'information-technology',nameUz:'Axborot texnologiyalari',nameRu:'Информационные технологии',nameEn:'Information Technology'},{slug:'economics',nameUz:'Iqtisodiyot',nameRu:'Экономика',nameEn:'Economics'},{slug:'science',nameUz:'Tabiiy fanlar',nameRu:'Естественные науки',nameEn:'Natural Sciences'},{slug:'languages',nameUz:'Tillar',nameRu:'Языки',nameEn:'Languages'}];for(const c of categories)await prisma.category.upsert({where:{slug:c.slug},update:c,create:c});console.log(`Seeded ${categories.length} categories.`);}
+main().catch(e=>{console.error(e);process.exitCode=1}).finally(async()=>prisma.$disconnect());

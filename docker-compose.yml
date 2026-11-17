@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: library
+      POSTGRES_PASSWORD: change-me-local-only
+      POSTGRES_DB: university_library
+    ports: ["5432:5432"]
+    volumes: ["library_db:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U library -d university_library"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  library_db:
