@@ -1,3 +1,4 @@
+import HeroBooks from '@/components/hero-books';
 import BookCover from '@/components/book-cover';
 import Link from 'next/link';
 import {getTranslations} from 'next-intl/server';
@@ -34,7 +35,7 @@ export default async function Home({params}:{params:Promise<{locale:string}>}) {
         </div>
         <div className="relative mx-auto w-full max-w-[510px] reveal-up reveal-delay-2">
           <div className="glow-orbit absolute -inset-8 rounded-full bg-emerald-300/20 blur-3xl"/><div className="absolute inset-2 rounded-full border border-emerald-800/10"/>
-          <div className="relative grid grid-cols-2 gap-4 p-2 sm:gap-5">{collections.map((item,i)=><div key={item.title} className={`book-cover ${item.tone} ${i===0?'float-soft':''} ${i===1?'float-soft-delay':''} ${i===2?'float-soft-delay':''} ${i===3?'float-soft':''}`}><span className="book-number">0{i+1}</span><div><div className="mb-3 text-[10px] font-bold uppercase tracking-[.16em] text-emerald-100">{item.eyebrow}</div><div className="text-xl font-extrabold leading-tight sm:text-2xl">{item.title}</div></div></div>)}</div>
+          <HeroBooks books={books.slice(0,4)} collections={collections} locale={locale}/>
           <div className="absolute -bottom-3 right-0 rounded-full border border-white bg-white/90 px-4 py-2 text-xs font-semibold text-slate-600 shadow-lg backdrop-blur"><span className="mr-2 inline-block h-2 w-2 rounded-full bg-emerald-500"/>{t('home.idea')}</div>
         </div>
         <div className="absolute bottom-0 left-5 right-5 hidden items-center justify-between border-t border-emerald-900/10 py-4 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400 md:flex"><span>{t('home.heroFoot')}</span><span className="text-teal">{t('home.heroFootRight')} <ArrowRight className="ml-1 inline" size={13}/></span></div>
