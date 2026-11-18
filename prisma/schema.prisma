@@ -20,6 +20,13 @@ enum UserStatus {
   BLOCKED
   PENDING
 }
+enum BookSection {
+  METHODICAL
+  FICTION
+  EDUCATIONAL
+  LANGUAGE
+}
+
 enum BookStatus {
   ACTIVE
   DRAFT
@@ -89,6 +96,7 @@ model Book {
   id               String         @id @default(cuid())
   slug             String         @unique
   title            String
+  section          BookSection?
   subtitle         String?
   description      String         @db.Text
   isbn             String?        @unique

@@ -25,7 +25,7 @@ export default async function BookDetail({params}: {params: Promise<{locale: str
     <div className="mt-8 grid items-start gap-8 md:grid-cols-[220px_1fr]">
       <BookCover bookId={book.id} title={book.title} files={book.files} className="mx-auto w-full max-w-[260px] min-h-[290px] md:max-w-none"/>
       <div><p className="whitespace-pre-line leading-7 text-slate-600">{book.description || t('noDescription')}</p>
-        <div className="mt-5">{user&&<SaveBookButton bookId={book.id} saved={saved}/>}</div><dl className="mt-7 grid grid-cols-2 gap-4 text-sm">
+        <div className="mt-5">{user&&<SaveBookButton bookId={book.id} saved={saved}/>}</div><dl className="mt-7 grid grid-cols-2 gap-4 text-sm">{book.section&&<div className="col-span-2"><dt className="text-slate-400">{t('section')}</dt><dd className="mt-1 font-semibold text-teal">{t(`sections.${book.section}`)}</dd></div>}
           <div><dt className="text-slate-400">{t('authors')}</dt><dd className="mt-1 font-semibold">{book.authors.map(x => x.author.fullName).join(', ') || '—'}</dd></div>
           <div><dt className="text-slate-400">{t('publisher')}</dt><dd className="mt-1 font-semibold">{book.publisher?.name || '—'}</dd></div>
           <div><dt className="text-slate-400">{t('year')}</dt><dd className="mt-1 font-semibold">{book.publicationYear || '—'}</dd></div>

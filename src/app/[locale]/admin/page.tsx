@@ -1,3 +1,4 @@
+import {isBookSection} from '@/lib/book-sections';
 import Brand from '@/components/brand';
 import {redirect} from 'next/navigation';
 import Link from 'next/link';
@@ -13,7 +14,7 @@ import {positiveInteger} from '@/lib/book-validation';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Admin({params, searchParams}: {params: Promise<{locale: string}>; searchParams: Promise<{tab?: string; q?: string; status?: string; page?: string}>}) {
+export default async function Admin({params, searchParams}: {params: Promise<{locale: string}>; searchParams: Promise<{tab?: string; q?: string; status?: string; section?: string; page?: string}>}) {
   const {locale} = await params;
   const p = await searchParams;
   const t = await getTranslations({locale, namespace: 'admin'});
@@ -24,8 +25,9 @@ export default async function Admin({params, searchParams}: {params: Promise<{lo
   const tab = ['users', 'loans', 'activity'].includes(p.tab || '') ? p.tab! : 'books';
   const query = (p.q || '').trim().slice(0, 300);
   const status = ['ACTIVE', 'DRAFT', 'ARCHIVED'].includes(p.status || '') ? p.status! : '';
+  const section = isBookSection(p.section) ? p.section : '';
   const requestedPage = positiveInteger(p.page, 1);
-  const where: Prisma.BookWhereInput = {...(status ? {status: status as 'ACTIVE' | 'DRAFT' | 'ARCHIVED'} : {}), ...(query ? {OR: [{title: {contains: query, mode: 'insensitive'}}, {isbn: {contains: query, mode: 'insensitive'}}, {authors: {some: {author: {fullName: {contains: query, mode: 'insensitive'}}}}}]} : {})};
+  const where: Prisma.BookWhereInput = {...(section ? {section} : {}), ...(status ? {status: status as 'ACTIVE' | 'DRAFT' | 'ARCHIVED'} : {}), ...(query ? {OR: [{title: {contains: query, mode: 'insensitive'}}, {isbn: {contains: query, mode: 'insensitive'}}, {authors: {some: {author: {fullName: {contains: query, mode: 'insensitive'}}}}}]} : {})};
   const data = await (async () => {
     try {
       const [totalBooks, activeBooks, draftBooks, usersCount, activeLoans, total] = await Promise.all([
@@ -54,7 +56,7 @@ export default async function Admin({params, searchParams}: {params: Promise<{lo
     <nav aria-label={t('workspace')} className="mb-7 flex gap-2 overflow-x-auto border-b border-slate-200">{tabs.map(item => <Link key={item.key} href={`/${locale}/admin${item.key === 'books' ? '' : `?tab=${item.key}`}`} aria-current={tab === item.key ? 'page' : undefined} className={`admin-tab ${tab === item.key ? 'active' : ''}`}><item.icon size={17}/>{t(item.key)}</Link>)}</nav>
     <main id="admin-content" tabIndex={-1}>
     {!data ? <div role="alert" className="rounded-2xl border border-amber-200 bg-amber-50 p-8"><AlertCircle className="text-amber-700"/><h2 className="mt-3 text-xl font-bold">{t('unavailable')}</h2><p className="mt-2 text-sm text-slate-600">{t('unavailableHint')}</p><Link href={`/${locale}/admin`} className="admin-button mt-5">{t('retry')}</Link></div> : <>
-    {tab === 'books' && <BookManager books={data.books} total={data.total} page={data.page} pages={data.pages} query={query} status={status} locale={locale}/>}
+    {tab === 'books' && <BookManager books={data.books} total={data.total} page={data.page} pages={data.pages} query={query} status={status} section={section} locale={locale}/>}
     {tab === 'users' && (admin ? <><h2 className="text-xl font-bold">{t('users')}</h2><p className="mb-5 mt-2 text-sm text-slate-500">{t('peopleHint')} · {Math.min(50, data.usersCount)} / {data.usersCount}</p><div className="admin-table-wrap"><table className="admin-table"><thead><tr>{['name', 'email', 'role', 'status', 'joined'].map(k => <th key={k}>{t(k)}</th>)}</tr></thead><tbody>{data.users.map(person => <tr key={person.id}><td className="font-semibold">{person.firstName} {person.lastName}</td><td>{person.email}</td><td>{t(person.role)}</td><td><span className={`status-badge ${person.status === 'ACTIVE' ? 'status-active' : 'status-draft'}`}>{t(`user${person.status}`)}</span></td><td>{formatDate(person.createdAt)}</td></tr>)}</tbody></table>{!data.users.length && <p className="p-8 text-center text-slate-500">{t('noUsers')}</p>}</div></> : <p>{t('restricted')}</p>)}
     {tab === 'loans' && <><h2 className="text-xl font-bold">{t('loans')}</h2><p className="mb-5 mt-2 text-sm text-slate-500">{t('loanHint')} · {data.loans.length} / {data.activeLoans}</p><div className="admin-table-wrap"><table className="admin-table"><thead><tr>{['bookTitle', 'borrower', 'due', 'status'].map(k => <th key={k}>{t(k)}</th>)}</tr></thead><tbody>{data.loans.map(loan => <tr key={loan.id}><td className="font-semibold">{loan.book.title}</td><td>{loan.borrower.firstName} {loan.borrower.lastName}</td><td>{formatDate(loan.dueAt)}</td><td><span className={`status-badge ${loan.dueAt < new Date() ? 'status-draft' : 'status-active'}`}>{t(loan.status === 'OVERDUE' || loan.dueAt < new Date() ? 'loanOVERDUE' : 'loanACTIVE')}</span></td></tr>)}</tbody></table>{!data.loans.length && <p className="p-12 text-center text-slate-500">{t('noLoans')}</p>}</div></>}
     {tab === 'activity' && (admin ? <><h2 className="text-xl font-bold">{t('activity')}</h2><p className="mb-5 mt-2 text-sm text-slate-500">{t('activityHint')}</p><div className="admin-table-wrap"><table className="admin-table"><thead><tr>{['event', 'actor', 'date'].map(k => <th key={k}>{t(k)}</th>)}</tr></thead><tbody>{data.activity.map(event => <tr key={event.id}><td><span className="flex items-center gap-2 font-semibold"><FileText size={16} className="text-teal"/>{['BOOK_CREATE','BOOK_UPDATE','BOOK_ARCHIVE','BOOK_FILE_UPLOAD'].includes(event.action) ? t(event.action) : event.action}</span><span className="mt-1 block text-xs text-slate-400">{event.entity} · {event.entityId}</span></td><td>{event.actor ? `${event.actor.firstName} ${event.actor.lastName}` : t('system')}</td><td>{formatDate(event.createdAt)}</td></tr>)}</tbody></table>{!data.activity.length && <p className="p-12 text-center text-slate-500">{t('noActivity')}</p>}</div></> : <p>{t('restricted')}</p>)}

@@ -74,7 +74,7 @@ PDF annotations/highlights, loan issuing/return operations, user role/status edi
 
 ## Verification — 17 November 2026
 
-TypeScript validation, 44 unit tests and the production build passed. An isolated PostgreSQL database accepted the initial migration. Chromium checks covered registration, staff sign-in, draft/create/edit/publish/archive, catalog and details, audit events, all three languages, mobile layouts, sign-out, duplicate/invalid input and student/librarian access restrictions. No browser runtime errors were observed in those flows. The production server also passed sign-in, dashboard rendering, draft creation and table refresh checks. The Vercel production site is available at https://bu-library.vercel.app/uz. PostgreSQL migrations and owner administrator setup have completed. Hosted health and catalog endpoints returned HTTP 200; anonymous management API access returned HTTP 403.
+TypeScript validation, 52 unit tests and the production build passed. An isolated PostgreSQL database accepted the initial migration. Chromium checks covered registration, staff sign-in, draft/create/edit/publish/archive, catalog and details, audit events, all three languages, mobile layouts, sign-out, duplicate/invalid input and student/librarian access restrictions. No browser runtime errors were observed in those flows. The production server also passed sign-in, dashboard rendering, draft creation and table refresh checks. The Vercel production site is available at https://bu-library.vercel.app/uz. PostgreSQL migrations and owner administrator setup have completed. Hosted health and catalog endpoints returned HTTP 200; anonymous management API access returned HTTP 403.
 
 ## Media storage setup
 
@@ -83,3 +83,7 @@ Connect a **private** Vercel Blob store to the project. The SDK reads `BLOB_READ
 ## Reading dashboard migration
 
 Apply committed migrations before releasing the reader update (`npm run db:deploy`). The additive migration stores actual PDF page count and optional completion time in `ReadingProgress`. `npm run build` and `npm run dev` copy the matching PDF.js worker from the installed package into `public`; do not commit the generated worker. Reader progress is saved on page navigation, with visible save/error status and a retry action.
+
+## Book sections
+
+New books require one of four sections: teaching methods/guides, fiction, educational literature or language learning. Staff can choose or change the section in the editor; the catalog and administration listings support section filters. Existing books remain unclassified until staff choose a section, so the migration does not guess their category. Partial updates preserve all omitted metadata.

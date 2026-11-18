@@ -2,7 +2,8 @@ import {NextRequest, NextResponse} from 'next/server';
 import {Prisma} from '@prisma/client';
 import {db} from '@/lib/db';
 import {currentUser, hasRole} from '@/lib/auth';
-import {bookSchema, positiveInteger} from '@/lib/book-validation';
+import {createBookSchema, positiveInteger} from '@/lib/book-validation';
+import {isBookSection} from '@/lib/book-sections';
 import {checkOrigin} from '@/lib/origin';
 
 export async function GET(req: NextRequest) {
@@ -18,6 +19,7 @@ export async function GET(req: NextRequest) {
   const status = p.get('status');
   const where: Prisma.BookWhereInput = {
     ...(!management ? {status: 'ACTIVE'} : ['ACTIVE', 'DRAFT', 'ARCHIVED'].includes(status || '') ? {status: status as 'ACTIVE' | 'DRAFT' | 'ARCHIVED'} : {}),
+    ...(isBookSection(p.get('section')) ? {section: p.get('section') as import('@prisma/client').BookSection} : {}),
     ...(p.get('language') ? {language: p.get('language')!} : {}),
     ...(q ? {OR: [{title: {contains: q, mode: 'insensitive'}}, {isbn: {contains: q, mode: 'insensitive'}}, {authors: {some: {author: {fullName: {contains: q, mode: 'insensitive'}}}}}]} : {}),
   };
@@ -34,7 +36,7 @@ export async function POST(req: NextRequest) {
   const rejected = checkOrigin(req); if (rejected) return rejected;
   const user = await currentUser();
   if (!user || !hasRole(user.role, ['LIBRARIAN'])) return NextResponse.json({error: 'Forbidden'}, {status: 403});
-  const p = bookSchema.safeParse(await req.json().catch(() => null));
+  const p = createBookSchema.safeParse(await req.json().catch(() => null));
   if (!p.success) return NextResponse.json({error: 'Invalid book data', details: p.error.flatten()}, {status: 400});
   const {authorNames, ...data} = p.data;
   try {

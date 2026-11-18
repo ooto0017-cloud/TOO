@@ -2,7 +2,7 @@ import {NextRequest, NextResponse} from 'next/server';
 import {Prisma} from '@prisma/client';
 import {db} from '@/lib/db';
 import {currentUser, hasRole} from '@/lib/auth';
-import {bookSchema} from '@/lib/book-validation';
+import {updateBookSchema} from '@/lib/book-validation';
 import {checkOrigin} from '@/lib/origin';
 
 export async function PATCH(req: NextRequest, {params}: {params: Promise<{id: string}>}) {
@@ -10,7 +10,7 @@ export async function PATCH(req: NextRequest, {params}: {params: Promise<{id: st
   const user = await currentUser();
   if (!user || !hasRole(user.role, ['LIBRARIAN'])) return NextResponse.json({error: 'Forbidden'}, {status: 403});
   const {id} = await params;
-  const p = bookSchema.partial().safeParse(await req.json().catch(() => null));
+  const p = updateBookSchema.safeParse(await req.json().catch(() => null));
   if (!p.success) return NextResponse.json({error: 'Invalid book data'}, {status: 400});
   const {authorNames, ...data} = p.data;
   try {

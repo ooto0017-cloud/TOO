@@ -1,0 +1,2 @@
+CREATE TYPE "BookSection" AS ENUM ('METHODICAL', 'FICTION', 'EDUCATIONAL', 'LANGUAGE');
+ALTER TABLE "Book" ADD COLUMN "section" "BookSection";

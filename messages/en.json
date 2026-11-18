@@ -103,7 +103,15 @@
     "page": "Page {page} of {total}",
     "emptyTitle": "No books found yet",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "sections": {
+      "METHODICAL": "Teaching methods and guides",
+      "FICTION": "Fiction",
+      "EDUCATIONAL": "Educational literature",
+      "LANGUAGE": "Language learning"
+    },
+    "section": "Section",
+    "allSections": "All sections"
   },
   "account": {
     "eyebrow": "Reader account",
@@ -137,7 +145,14 @@
     "openPdf": "Read PDF",
     "downloadPdf": "Download PDF",
     "signInToRead": "Sign in to read PDF",
-    "noPdf": "A PDF has not been attached to this book yet."
+    "noPdf": "A PDF has not been attached to this book yet.",
+    "sections": {
+      "METHODICAL": "Teaching methods and guides",
+      "FICTION": "Fiction",
+      "EDUCATIONAL": "Educational literature",
+      "LANGUAGE": "Language learning"
+    },
+    "section": "Section"
   },
   "admin": {
     "title": "Administration",
@@ -243,7 +258,16 @@
     "uploadFailed": "Book details were saved, but uploading or publishing did not finish. Click Save again to retry without creating a duplicate book.",
     "currentPdf": "Open attached PDF",
     "coverPreview": "Cover preview",
-    "BOOK_FILE_UPLOAD": "Book file uploaded"
+    "BOOK_FILE_UPLOAD": "Book file uploaded",
+    "sections": {
+      "METHODICAL": "Teaching methods and guides",
+      "FICTION": "Fiction",
+      "EDUCATIONAL": "Educational literature",
+      "LANGUAGE": "Language learning"
+    },
+    "section": "Section",
+    "allSections": "All sections",
+    "chooseSection": "Choose a section"
   },
   "reader": {
     "reading": "Currently reading",

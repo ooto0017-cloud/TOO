@@ -103,7 +103,15 @@
     "page": "Sahifa {page} / {total}",
     "emptyTitle": "Hozircha kitoblar topilmadi",
     "previous": "Oldingi",
-    "next": "Keyingi"
+    "next": "Keyingi",
+    "sections": {
+      "METHODICAL": "O‘quv-uslubiy adabiyotlar",
+      "FICTION": "Badiiy adabiyotlar",
+      "EDUCATIONAL": "O‘quv adabiyotlari",
+      "LANGUAGE": "Til o‘rganish adabiyotlari"
+    },
+    "section": "Bo‘lim",
+    "allSections": "Barcha bo‘limlar"
   },
   "account": {
     "eyebrow": "Kitobxon kabineti",
@@ -137,7 +145,14 @@
     "openPdf": "PDFni o‘qish",
     "downloadPdf": "PDFni yuklab olish",
     "signInToRead": "PDFni o‘qish uchun kiring",
-    "noPdf": "Bu kitobga PDF fayl hali biriktirilmagan."
+    "noPdf": "Bu kitobga PDF fayl hali biriktirilmagan.",
+    "sections": {
+      "METHODICAL": "O‘quv-uslubiy adabiyotlar",
+      "FICTION": "Badiiy adabiyotlar",
+      "EDUCATIONAL": "O‘quv adabiyotlari",
+      "LANGUAGE": "Til o‘rganish adabiyotlari"
+    },
+    "section": "Bo‘lim"
   },
   "admin": {
     "title": "Boshqaruv paneli",
@@ -243,7 +258,16 @@
     "uploadFailed": "Kitob ma’lumotlari saqlandi, lekin fayl yuklash yoki nashr qilish tugamadi. Ma’lumotlarni yo‘qotmasdan Saqlash tugmasini qayta bosing.",
     "currentPdf": "Biriktirilgan PDFni ochish",
     "coverPreview": "Muqova ko‘rinishi",
-    "BOOK_FILE_UPLOAD": "Kitob fayli yuklandi"
+    "BOOK_FILE_UPLOAD": "Kitob fayli yuklandi",
+    "sections": {
+      "METHODICAL": "O‘quv-uslubiy adabiyotlar",
+      "FICTION": "Badiiy adabiyotlar",
+      "EDUCATIONAL": "O‘quv adabiyotlari",
+      "LANGUAGE": "Til o‘rganish adabiyotlari"
+    },
+    "section": "Bo‘lim",
+    "allSections": "Barcha bo‘limlar",
+    "chooseSection": "Bo‘limni tanlang"
   },
   "reader": {
     "reading": "Men o‘qiyotgan kitoblar",
